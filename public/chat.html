@@ -2,41 +2,133 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <link rel="stylesheet" href="css/style.css">
   <title>ChatCord App</title>
 </head>
 <body>
-  <div class="chat-container">
+  <div class="chat-container mode-modern">
     <header class="chat-header">
-      <h1><i class="fas fa-smile"></i> ChatCord</h1>
-      <a href="index.html" class="btn">Leave Room</a>
+      <h1><i class="fas fa-smile"></i> <span>ChatCord</span></h1>
+      <div class="header-actions">
+        <button id="search-toggle-btn" class="btn btn-icon" title="Search Messages (Ctrl+F)">
+          <i class="fas fa-search"></i>
+        </button>
+        <button id="clear-chat-btn" class="btn btn-icon" title="Clear Chat Screen">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button id="invite-btn" class="btn btn-icon" title="Copy Invite Link">
+          <i class="fas fa-link"></i>
+        </button>
+        <button id="sound-toggle" class="btn btn-icon" title="Toggle Sound (Enabled)">
+          <i class="fas fa-volume-up"></i>
+        </button>
+        <button id="theme-toggle" class="btn btn-icon" title="Toggle Dark/Light Mode">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button id="sidebar-toggle" class="btn btn-icon sidebar-toggle-btn" title="Toggle Users List">
+          <i class="fas fa-users"></i>
+        </button>
+        <button id="view-mode-toggle" class="btn btn-mode" title="Toggle between Modern (WhatsApp) and Classic mode">
+          <i class="fas fa-stream"></i> <span id="mode-text">Classic Mode</span>
+        </button>
+        <a href="index.html" id="leave-btn" class="btn btn-leave" title="Leave Room"><i class="fas fa-sign-out-alt"></i> <span class="leave-text">Leave</span></a>
+      </div>
     </header>
     <main class="chat-main">
-      <div class="chat-sidebar">
+      <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
+      <div class="chat-sidebar" id="chat-sidebar">
+        <div class="sidebar-header-mobile">
+          <h3>Room Info</h3>
+          <button id="sidebar-close-btn" class="sidebar-close-btn" title="Close"><i class="fas fa-times"></i></button>
+        </div>
         <h3><i class="fas fa-comments"></i> Room Name:</h3>
         <h2 id="room-name"></h2>
-        <h3><i class="fas fa-users"></i> Users</h3>
+        <div id="room-lock-badge" class="room-lock-badge hidden">
+          <i class="fas fa-lock"></i> Passcode Protected
+        </div>
+        <div class="sidebar-actions-panel">
+          <button type="button" id="mobile-invite-btn" class="sidebar-action-card" title="Copy room invite link">
+            <i class="fas fa-link"></i> <span>Copy Room Invite</span>
+          </button>
+          <button type="button" id="mobile-sound-btn" class="sidebar-action-card" title="Toggle audio chime">
+            <i class="fas fa-volume-up" id="mobile-sound-icon"></i> <span>Sound: <strong id="mobile-sound-status">On</strong></span>
+          </button>
+          <button type="button" id="mobile-clear-btn" class="sidebar-action-card" title="Clear chat screen locally">
+            <i class="fas fa-trash-alt"></i> <span>Clear Chat Screen</span>
+          </button>
+        </div>
+        <h3><i class="fas fa-users"></i> Users (<span id="user-count">0</span>)</h3>
         <ul id="users">
           
         </ul>
       </div>
-      <div class="chat-messages">
-				
+      <div class="chat-messages-container">
+        <div id="search-bar" class="search-bar hidden">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="search-input" placeholder="Search messages in room..." autocomplete="off" />
+          <span id="search-results-count" class="search-count"></span>
+          <button type="button" id="search-close-btn" class="search-close-btn" title="Close Search"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages">
+        </div>
+        <button id="scroll-bottom-btn" class="scroll-bottom-btn hidden" title="Scroll to bottom">
+          <i class="fas fa-chevron-down"></i>
+          <span id="unread-count" class="unread-badge hidden">0</span>
+        </button>
       </div>
     </main>
     <div class="chat-form-container">
+      <div id="typing-indicator" class="typing-indicator hidden">
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="typing-text" id="typing-text"></span>
+      </div>
+      <div id="image-preview-container" class="image-preview-container hidden">
+        <img id="image-preview" src="" alt="Staged image" />
+        <button type="button" id="cancel-image-btn" class="cancel-image-btn" title="Remove image"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="reply-preview-container" class="reply-preview-container hidden">
+        <div class="reply-preview-bar"></div>
+        <div class="reply-preview-content">
+          <div class="reply-preview-title">
+            <i class="fas fa-reply"></i> Replying to <span id="reply-to-user"></span>
+          </div>
+          <div id="reply-to-text" class="reply-preview-text"></div>
+        </div>
+        <button type="button" id="cancel-reply-btn" class="cancel-reply-btn" title="Cancel Reply">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
       <form id="chat-form">
-        <input
-          id="msg"
-          type="text"
-          placeholder="Enter Message"
-          required
-          autocomplete="off"
-        />
-        <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
+        <div class="input-container">
+          <input
+            id="msg"
+            type="text"
+            placeholder="Type a message (e.g. *bold*, _italic_, `code`, URLs)..."
+            autocomplete="off"
+          />
+          <button type="button" id="attach-btn" class="attach-btn" title="Attach Image or Paste from Clipboard">
+            <i class="fas fa-paperclip"></i>
+          </button>
+          <input type="file" id="image-file-input" accept="image/*" class="hidden" />
+          <button type="button" id="emoji-btn" class="emoji-btn" title="Insert Emoji">
+            <i class="far fa-smile"></i>
+          </button>
+          <div id="emoji-picker" class="emoji-picker hidden"></div>
+        </div>
+        <button type="submit" class="btn-send" id="send-btn" title="Send message"><i class="fas fa-paper-plane"></i></button>
       </form>
+    </div>
+    <div id="toast" class="toast hidden"></div>
+    <div id="image-modal" class="image-modal hidden">
+      <div class="image-modal-backdrop"></div>
+      <div class="image-modal-content">
+        <img id="modal-img" src="" alt="Full view" />
+        <button type="button" id="modal-close-btn" class="modal-close-btn"><i class="fas fa-times"></i></button>
+      </div>
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.4/qs.min.js" crossorigin="anonymous"></script>
