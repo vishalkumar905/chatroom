@@ -1626,48 +1626,49 @@ body.dark-theme .message .text a.chat-link {
 	}
 
 	.header-actions {
-		gap: 5px;
+		gap: 4px;
 		display: flex;
 		align-items: center;
 		flex-shrink: 0;
 	}
 
-	/* Secondary controls moved to mobile drawer for clean header */
-	#clear-chat-btn,
-	#invite-btn,
-	#sound-toggle {
-		display: none !important;
-	}
-
-	.sidebar-actions-panel {
-		display: flex;
+	.btn-icon {
+		width: 30px;
+		height: 30px;
+		font-size: 12.5px;
+		padding: 0;
+		border-radius: 50%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
 	}
 
 	.btn-mode {
-		padding: 5px 8px;
-		font-size: 13px;
+		width: 30px;
+		height: 30px;
+		padding: 0 !important;
+		border-radius: 50% !important;
+		display: inline-flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		font-size: 12.5px;
+		flex-shrink: 0;
 	}
 
 	.btn-mode #mode-text {
 		display: none !important;
 	}
 
-	.btn-icon {
-		width: 32px;
-		height: 32px;
-		font-size: 13px;
-		padding: 0;
-	}
-
 	.btn-leave {
-		width: 32px !important;
-		height: 32px !important;
+		width: 30px !important;
+		height: 30px !important;
 		padding: 0 !important;
 		border-radius: 50% !important;
 		display: inline-flex !important;
 		align-items: center !important;
 		justify-content: center !important;
-		font-size: 13px !important;
+		font-size: 12.5px !important;
 		background: #dc3545 !important;
 		color: #ffffff !important;
 		flex-shrink: 0 !important;
