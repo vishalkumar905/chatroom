@@ -92,6 +92,11 @@ socket.on('joinError', ({ message, room: errRoom }) => {
     window.location.href = `index.html?error=${encodeURIComponent(message)}&room=${encodeURIComponent(targetRoom)}`;
 });
 
+// Handle rate limiting warning
+socket.on('rateLimited', ({ message }) => {
+    showToast(message || 'You are sending messages too quickly.');
+});
+
 // Get room & user list
 socket.on('roomUsers', ({ room, users, isProtected }) => {
     outputUsers(users);
@@ -282,17 +287,20 @@ if (searchInput) {
 // IMAGE ATTACHMENT & CLIPBOARD PASTE
 // ===================================
 function stageImageFile(file) {
-    if (!file || !file.type.startsWith('image/')) return;
+    if (!file || !file.type.startsWith('image/')) {
+        showToast('Please select a valid image file.');
+        return;
+    }
 
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-            // Compress and scale to max 800px on canvas
+            // Adaptive compression: downscale high-resolution images to max 1200px
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const maxDimension = 800;
+            const maxDimension = 1200;
 
             if (width > maxDimension || height > maxDimension) {
                 if (width > height) {
@@ -307,14 +315,23 @@ function stageImageFile(file) {
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, width, height);
 
-            stagedImage = canvas.toDataURL('image/jpeg', 0.82);
+            // Compress to optimized JPEG (quality 0.80) to drastically reduce byte size down to ~60-150KB
+            stagedImage = canvas.toDataURL('image/jpeg', 0.80);
             if (imagePreview) imagePreview.src = stagedImage;
             if (imagePreviewContainer) imagePreviewContainer.classList.remove('hidden');
             msgInput.focus();
         };
+        img.onerror = () => {
+            showToast('Failed to load image.');
+        };
         img.src = e.target.result;
+    };
+    reader.onerror = () => {
+        showToast('Failed to read file.');
     };
     reader.readAsDataURL(file);
 }
