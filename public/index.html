@@ -19,7 +19,8 @@
 				<h1><i class="fas fa-smile"></i> ChatCord</h1>
 			</header>
 			<main class="join-main">
-				<form action="chat.html">
+				<div id="error-banner" class="alert-error hidden"></div>
+				<form id="join-form" action="chat.html">
 					<div class="form-control">
 						<label for="username">Username</label>
 						<input
@@ -28,22 +29,105 @@
 							id="username"
 							placeholder="Enter username..."
 							required
+							autofocus
+							autocomplete="off"
 						/>
 					</div>
 					<div class="form-control">
-						<label for="room">Room</label>
-						<select name="room" id="room">
-							<option value="JavaScript">JavaScript</option>
-							<option value="Python">Python</option>
-							<option value="PHP">PHP</option>
-							<option value="C#">C#</option>
-							<option value="Ruby">Ruby</option>
-							<option value="Java">Java</option>
-						</select>
+						<label for="room">Room (select or type custom room)</label>
+						<input
+							type="text"
+							name="room"
+							id="room"
+							list="room-suggestions"
+							placeholder="e.g. JavaScript, Design, Hangout..."
+							required
+							autocomplete="off"
+						/>
+						<datalist id="room-suggestions">
+							<option value="JavaScript"></option>
+							<option value="Python"></option>
+							<option value="General"></option>
+							<option value="Design"></option>
+							<option value="PHP"></option>
+							<option value="Java"></option>
+						</datalist>
+					</div>
+					<div class="form-control">
+						<label for="passcode">
+							<i class="fas fa-key"></i> Room Passcode / PIN 
+							<span class="label-badge">Optional</span>
+						</label>
+						<div class="password-wrapper">
+							<input
+								type="password"
+								name="passcode"
+								id="passcode"
+								placeholder="Enter passcode..."
+								autocomplete="off"
+							/>
+							<button type="button" id="toggle-pwd-btn" class="toggle-pwd-btn" title="Show/Hide Passcode">
+								<i class="far fa-eye"></i>
+							</button>
+						</div>
+						<small class="form-hint">Locks the room while active. Leave empty for open access.</small>
 					</div>
 					<button type="submit" class="btn">Join Chat</button>
 				</form>
 			</main>
 		</div>
+
+		<script>
+			// Check URL parameters for errors or prefilled room
+			const params = new URLSearchParams(window.location.search);
+			const error = params.get('error');
+			const room = params.get('room');
+
+			if (room) {
+				const roomInput = document.getElementById('room');
+				if (roomInput) roomInput.value = room;
+				const pwd = document.getElementById('passcode');
+				if (pwd) pwd.focus();
+			}
+
+			if (error) {
+				const banner = document.getElementById('error-banner');
+				if (banner) {
+					banner.textContent = error;
+					banner.classList.remove('hidden');
+				}
+			}
+
+			// Toggle password visibility
+			const pwdInput = document.getElementById('passcode');
+			const toggleBtn = document.getElementById('toggle-pwd-btn');
+			if (toggleBtn && pwdInput) {
+				toggleBtn.addEventListener('click', () => {
+					const isPwd = pwdInput.type === 'password';
+					pwdInput.type = isPwd ? 'text' : 'password';
+					toggleBtn.innerHTML = isPwd ? '<i class="far fa-eye-slash"></i>' : '<i class="far fa-eye"></i>';
+				});
+			}
+
+			// Submit without exposing passcode in the browser URL
+			const joinForm = document.getElementById('join-form');
+			if (joinForm) {
+				joinForm.addEventListener('submit', (e) => {
+					e.preventDefault();
+					const username = document.getElementById('username').value.trim();
+					const room = document.getElementById('room').value.trim();
+					const passcode = document.getElementById('passcode').value.trim();
+
+					if (passcode) {
+						sessionStorage.setItem('ephemeral_room_passcode', passcode);
+					} else {
+						sessionStorage.removeItem('ephemeral_room_passcode');
+					}
+
+					// Navigate cleanly without passcode in query string
+					window.location.href = `chat.html?username=${encodeURIComponent(username)}&room=${encodeURIComponent(room)}`;
+				});
+			}
+		</script>
 	</body>
 </html>
