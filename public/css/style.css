@@ -411,10 +411,12 @@ a {
 		background-color: #fff3bf;
 		box-shadow: 0 0 0 3px #fab005;
 	}
+
 	50% {
 		background-color: #fff9db;
 		box-shadow: 0 0 0 4px #fab005;
 	}
+
 	100% {
 		background-color: var(--light-color);
 		box-shadow: none;
@@ -721,7 +723,7 @@ a {
 	font-weight: bold;
 	padding: 2px 6px;
 	border-radius: 10px;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .unread-badge.hidden {
@@ -760,12 +762,27 @@ a {
 	animation: bounceDot 1.4s infinite ease-in-out both;
 }
 
-.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+.typing-dots span:nth-child(1) {
+	animation-delay: -0.32s;
+}
+
+.typing-dots span:nth-child(2) {
+	animation-delay: -0.16s;
+}
 
 @keyframes bounceDot {
-	0%, 80%, 100% { transform: scale(0); opacity: 0.35; }
-	40% { transform: scale(1); opacity: 1; }
+
+	0%,
+	80%,
+	100% {
+		transform: scale(0);
+		opacity: 0.35;
+	}
+
+	40% {
+		transform: scale(1);
+		opacity: 1;
+	}
 }
 
 /* Checkmarks for sent messages */
@@ -1582,7 +1599,9 @@ body.dark-theme .message .text a.chat-link {
 
 /* Responsive & Mobile Drawer */
 @media (max-width: 768px) {
-	html, body {
+
+	html,
+	body {
 		height: 100%;
 		height: 100dvh;
 		margin: 0;
