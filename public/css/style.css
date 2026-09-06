@@ -1632,6 +1632,12 @@ body.dark-theme .message .text a.chat-link {
 		flex-shrink: 0;
 	}
 
+	/* Hide theme switcher and classic mode toggle on mobile */
+	#theme-toggle,
+	#view-mode-toggle {
+		display: none !important;
+	}
+
 	.btn-icon {
 		width: 30px;
 		height: 30px;
