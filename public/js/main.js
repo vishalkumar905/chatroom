@@ -420,11 +420,25 @@ function playNotificationSound(type = 'incoming') {
     } catch (e) {}
 }
 
+function updateSoundUi() {
+    if (soundToggle) {
+        soundToggle.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+        soundToggle.title = soundEnabled ? 'Toggle Sound (Enabled)' : 'Toggle Sound (Muted)';
+    }
+    const mobileSoundStatus = document.getElementById('mobile-sound-status');
+    const mobileSoundIcon = document.getElementById('mobile-sound-icon');
+    if (mobileSoundStatus) {
+        mobileSoundStatus.textContent = soundEnabled ? 'On' : 'Off';
+    }
+    if (mobileSoundIcon) {
+        mobileSoundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+    }
+}
+
 if (soundToggle) {
     soundToggle.addEventListener('click', () => {
         soundEnabled = !soundEnabled;
-        soundToggle.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
-        soundToggle.title = soundEnabled ? 'Toggle Sound (Enabled)' : 'Toggle Sound (Muted)';
+        updateSoundUi();
         showToast(soundEnabled ? 'Sound enabled' : 'Sound muted');
     });
 }
@@ -593,15 +607,53 @@ if (viewModeToggle && chatContainer) {
 // ===================================
 // MOBILE SIDEBAR DRAWER
 // ===================================
+const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+function openSidebar() {
+    if (chatSidebar) chatSidebar.classList.add('active');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+}
+
+function closeSidebar() {
+    if (chatSidebar) chatSidebar.classList.remove('active');
+    if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+}
+
 if (sidebarToggle && chatSidebar) {
     sidebarToggle.addEventListener('click', () => {
-        chatSidebar.classList.toggle('active');
+        if (chatSidebar.classList.contains('active')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
     });
 }
 
-if (sidebarCloseBtn && chatSidebar) {
-    sidebarCloseBtn.addEventListener('click', () => {
-        chatSidebar.classList.remove('active');
+if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+const mobileInviteBtn = document.getElementById('mobile-invite-btn');
+const mobileSoundBtn = document.getElementById('mobile-sound-btn');
+const mobileClearBtn = document.getElementById('mobile-clear-btn');
+
+if (mobileInviteBtn) {
+    mobileInviteBtn.addEventListener('click', () => {
+        if (inviteBtn) inviteBtn.click();
+    });
+}
+
+if (mobileSoundBtn) {
+    mobileSoundBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        updateSoundUi();
+        showToast(soundEnabled ? 'Sound enabled' : 'Sound muted');
+    });
+}
+
+if (mobileClearBtn) {
+    mobileClearBtn.addEventListener('click', () => {
+        if (clearChatBtn) clearChatBtn.click();
+        closeSidebar();
     });
 }
 
@@ -639,7 +691,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         if (currentReply) clearReplyTarget();
         if (emojiPicker) emojiPicker.classList.add('hidden');
-        if (chatSidebar) chatSidebar.classList.remove('active');
+        closeSidebar();
         if (imageModal && !imageModal.classList.contains('hidden')) closeImageModal();
         if (searchBar && !searchBar.classList.contains('hidden')) closeSearch();
     }

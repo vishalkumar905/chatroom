@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <link rel="stylesheet" href="css/style.css">
   <title>ChatCord App</title>
@@ -10,7 +10,7 @@
 <body>
   <div class="chat-container mode-modern">
     <header class="chat-header">
-      <h1><i class="fas fa-smile"></i> ChatCord</h1>
+      <h1><i class="fas fa-smile"></i> <span>ChatCord</span></h1>
       <div class="header-actions">
         <button id="search-toggle-btn" class="btn btn-icon" title="Search Messages (Ctrl+F)">
           <i class="fas fa-search"></i>
@@ -33,10 +33,11 @@
         <button id="view-mode-toggle" class="btn btn-mode" title="Toggle between Modern (WhatsApp) and Classic mode">
           <i class="fas fa-stream"></i> <span id="mode-text">Classic Mode</span>
         </button>
-        <a href="index.html" class="btn btn-leave">Leave</a>
+        <a href="index.html" id="leave-btn" class="btn btn-leave" title="Leave Room"><i class="fas fa-sign-out-alt"></i> <span class="leave-text">Leave</span></a>
       </div>
     </header>
     <main class="chat-main">
+      <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
       <div class="chat-sidebar" id="chat-sidebar">
         <div class="sidebar-header-mobile">
           <h3>Room Info</h3>
@@ -46,6 +47,17 @@
         <h2 id="room-name"></h2>
         <div id="room-lock-badge" class="room-lock-badge hidden">
           <i class="fas fa-lock"></i> Passcode Protected
+        </div>
+        <div class="sidebar-actions-panel">
+          <button type="button" id="mobile-invite-btn" class="sidebar-action-card" title="Copy room invite link">
+            <i class="fas fa-link"></i> <span>Copy Room Invite</span>
+          </button>
+          <button type="button" id="mobile-sound-btn" class="sidebar-action-card" title="Toggle audio chime">
+            <i class="fas fa-volume-up" id="mobile-sound-icon"></i> <span>Sound: <strong id="mobile-sound-status">On</strong></span>
+          </button>
+          <button type="button" id="mobile-clear-btn" class="sidebar-action-card" title="Clear chat screen locally">
+            <i class="fas fa-trash-alt"></i> <span>Clear Chat Screen</span>
+          </button>
         </div>
         <h3><i class="fas fa-users"></i> Users (<span id="user-count">0</span>)</h3>
         <ul id="users">
@@ -107,7 +119,7 @@
           </button>
           <div id="emoji-picker" class="emoji-picker hidden"></div>
         </div>
-        <button class="btn btn-send"><i class="fas fa-paper-plane"></i> Send</button>
+        <button type="submit" class="btn-send" id="send-btn" title="Send message"><i class="fas fa-paper-plane"></i></button>
       </form>
     </div>
     <div id="toast" class="toast hidden"></div>
