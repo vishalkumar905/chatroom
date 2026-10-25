@@ -1,5 +1,5 @@
-// ChatCord Service Worker - Version 1.2.0
-const CACHE_NAME = 'chatcord-cache-v3';
+// ChatCord Service Worker - Version 1.3.0
+const CACHE_NAME = 'chatcord-cache-v4';
 
 // Essential App Shell resources to precache
 const PRECACHE_ASSETS = [

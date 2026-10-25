@@ -948,6 +948,142 @@ chatMessages.addEventListener('dblclick', (e) => {
     }
 });
 
+// ===================================
+// MOBILE SWIPE-TO-REPLY GESTURE
+// ===================================
+(function setupSwipeToReply() {
+    let startX = 0;
+    let startY = 0;
+    let activeMessage = null;
+    let indicator = null;
+    let isSwiping = false;
+    let isScrolling = false;
+    let hasVibrated = false;
+    const THRESHOLD = 42;
+    const MAX_DRAG = 72;
+
+    chatMessages.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        const msgDiv = e.target.closest('.message');
+        if (!msgDiv || msgDiv.classList.contains('message-bot')) return;
+
+        // Skip interactive elements
+        if (e.target.closest('button, a, .reaction-pill, .message-image, .reply-quote')) return;
+
+        activeMessage = msgDiv;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isSwiping = false;
+        isScrolling = false;
+        hasVibrated = false;
+
+        if (indicator && indicator.parentNode) {
+            indicator.remove();
+        }
+        indicator = null;
+    }, { passive: true });
+
+    chatMessages.addEventListener('touchmove', (e) => {
+        if (!activeMessage || e.touches.length !== 1) return;
+
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = currentX - startX;
+        const diffY = currentY - startY;
+
+        // Detect swipe vs scroll
+        if (!isSwiping && !isScrolling) {
+            if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 7) {
+                isScrolling = true;
+                return;
+            }
+            if (diffX > 7 && Math.abs(diffX) > Math.abs(diffY)) {
+                isSwiping = true;
+
+                indicator = document.createElement('div');
+                indicator.className = 'swipe-reply-indicator';
+                indicator.innerHTML = '<i class="fas fa-reply"></i>';
+                activeMessage.appendChild(indicator);
+            }
+        }
+
+        if (isScrolling || !isSwiping || diffX < 0) {
+            return;
+        }
+
+        if (e.cancelable) {
+            e.preventDefault();
+        }
+
+        const translateX = Math.min(diffX * 0.65, MAX_DRAG);
+        activeMessage.style.transform = `translateX(${translateX}px)`;
+        activeMessage.style.transition = 'none';
+
+        if (indicator) {
+            const progress = Math.min(translateX / THRESHOLD, 1);
+            indicator.style.opacity = `${progress}`;
+
+            if (translateX >= THRESHOLD) {
+                if (!hasVibrated) {
+                    hasVibrated = true;
+                    indicator.classList.add('active');
+                    if (navigator.vibrate) {
+                        try { navigator.vibrate(15); } catch (_) {}
+                    }
+                }
+            } else {
+                if (hasVibrated) {
+                    hasVibrated = false;
+                    indicator.classList.remove('active');
+                }
+            }
+        }
+    }, { passive: false });
+
+    function resetSwipe(triggerReply) {
+        if (!activeMessage) return;
+
+        const msgDiv = activeMessage;
+        const ind = indicator;
+        activeMessage = null;
+        indicator = null;
+
+        // Snap back with smooth spring
+        msgDiv.style.transition = 'transform 0.22s cubic-bezier(0.18, 0.89, 0.32, 1.25)';
+        msgDiv.style.transform = 'translateX(0px)';
+
+        if (triggerReply) {
+            const id = msgDiv.dataset.id;
+            const replyBtn = msgDiv.querySelector('.reply-btn');
+            const author = replyBtn ? replyBtn.dataset.username : (msgDiv.classList.contains('message-own') ? username : '');
+            const textEl = msgDiv.querySelector('.text');
+            const text = textEl ? textEl.textContent.trim() : (msgDiv.querySelector('.message-image') ? '📷 [Image]' : '');
+
+            if (id && text) {
+                setReplyTarget(id, author, text);
+            }
+        }
+
+        setTimeout(() => {
+            msgDiv.style.transition = '';
+            msgDiv.style.transform = '';
+            if (ind && ind.parentNode) {
+                ind.remove();
+            }
+        }, 240);
+    }
+
+    chatMessages.addEventListener('touchend', () => {
+        if (!activeMessage) return;
+        const shouldTrigger = isSwiping && hasVibrated;
+        resetSwipe(shouldTrigger);
+    });
+
+    chatMessages.addEventListener('touchcancel', () => {
+        resetSwipe(false);
+    });
+})();
+
 // Real-time DOM reaction updater
 function applyReactionToDOM(messageId, emoji, reactor) {
     const messageDiv = document.getElementById(`msg-${messageId}`);

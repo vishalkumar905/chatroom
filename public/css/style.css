@@ -2079,3 +2079,49 @@ body.dark-mode .pwa-install-text h4 {
 body.dark-mode .pwa-install-text p {
 	color: #aab;
 }
+
+/* =========================================================
+   Mobile Swipe-To-Reply Styling
+   ========================================================= */
+
+.chat-messages {
+	overflow-x: hidden !important;
+}
+
+.swipe-reply-indicator {
+	position: absolute;
+	top: 50%;
+	left: -8px;
+	transform: translate(-100%, -50%) scale(0.6);
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: rgba(102, 122, 255, 0.18);
+	color: var(--dark-color-a);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 10;
+	transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.swipe-reply-indicator.active {
+	background: var(--dark-color-a) !important;
+	color: #ffffff !important;
+	box-shadow: 0 3px 12px rgba(102, 122, 255, 0.45);
+	transform: translate(-100%, -50%) scale(1.15) !important;
+}
+
+body.dark-mode .swipe-reply-indicator {
+	background: rgba(255, 255, 255, 0.18);
+	color: #ffffff;
+}
+
+body.dark-mode .swipe-reply-indicator.active {
+	background: #7386ff !important;
+	color: #ffffff !important;
+	box-shadow: 0 3px 12px rgba(115, 134, 255, 0.5);
+}
