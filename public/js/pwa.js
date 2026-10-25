@@ -7,13 +7,33 @@
 
   let deferredInstallPrompt = null;
 
-  // 1. Register Service Worker
+  // 1. Register Service Worker with seamless auto-update
   if ('serviceWorker' in navigator) {
+    let refreshing = false;
+
+    // When the new service worker activates and claims the page, auto-reload cleanly
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('/sw.js')
         .then((reg) => {
           console.log('[PWA] Service Worker registered with scope:', reg.scope);
+
+          // Force an immediate update check on load
+          reg.update().catch(() => {});
+
+          // Check for updates whenever the user switches back to the app / unlocks phone
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              reg.update().catch(() => {});
+            }
+          });
 
           // Check for worker updates
           reg.addEventListener('updatefound', () => {
@@ -21,14 +41,12 @@
             if (!installingWorker) return;
 
             installingWorker.addEventListener('statechange', () => {
-              if (
-                installingWorker.state === 'installed' &&
-                navigator.serviceWorker.controller
-              ) {
-                showPwaToast('New update available! Tap to refresh.', 6000, () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  // Existing user receiving an update: activate immediately!
+                  showPwaToast('⚡ Updating ChatCord to latest version...', 2500);
                   installingWorker.postMessage({ type: 'SKIP_WAITING' });
-                  window.location.reload();
-                });
+                }
               }
             });
           });
@@ -169,9 +187,137 @@
     }, duration);
   }
 
+  // 5. Mobile Virtual Keyboard & Viewport Fix
+  // Fixes the issue where iOS Safari and Android pan/scroll the layout viewport upwards
+  // when the virtual keyboard opens, pushing the header and top messages out of the screen.
+  // By pinning the container's top and height directly to window.visualViewport,
+  // the entire header remains 100% visible at the top of the user's screen at all times.
+  function setupMobileViewportFix() {
+    let ticking = false;
+
+    function syncViewport() {
+      const chatContainer = document.querySelector('.chat-container');
+      if (!chatContainer) return;
+
+      const isMobile =
+        window.innerWidth <= 768 ||
+        window.matchMedia('(display-mode: standalone)').matches ||
+        'ontouchstart' in window;
+
+      if (!isMobile) {
+        chatContainer.style.removeProperty('top');
+        chatContainer.style.removeProperty('height');
+        chatContainer.style.removeProperty('position');
+        document.documentElement.style.removeProperty('--app-top');
+        document.documentElement.style.removeProperty('--app-height');
+        return;
+      }
+
+      if (window.visualViewport) {
+        const vv = window.visualViewport;
+        const topPx = `${vv.offsetTop}px`;
+        const heightPx = `${vv.height}px`;
+
+        document.documentElement.style.setProperty('--app-top', topPx);
+        document.documentElement.style.setProperty('--app-height', heightPx);
+
+        chatContainer.style.setProperty('top', topPx, 'important');
+        chatContainer.style.setProperty('height', heightPx, 'important');
+        chatContainer.style.setProperty('position', 'fixed', 'important');
+
+        // Detect if virtual keyboard is likely open (height is substantially less than full window)
+        const isKeyboard = window.innerHeight - vv.height > 100;
+        if (isKeyboard) {
+          document.body.classList.add('keyboard-open');
+        } else {
+          document.body.classList.remove('keyboard-open');
+        }
+      } else {
+        const heightPx = `${window.innerHeight}px`;
+        document.documentElement.style.setProperty('--app-top', '0px');
+        document.documentElement.style.setProperty('--app-height', heightPx);
+        chatContainer.style.setProperty('top', '0px', 'important');
+        chatContainer.style.setProperty('height', heightPx, 'important');
+      }
+    }
+
+    function requestSync(scrollChatToBottom = false) {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          syncViewport();
+          ticking = false;
+          if (scrollChatToBottom) {
+            const chatMessages = document.querySelector('.chat-messages');
+            if (chatMessages) {
+              chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+          }
+        });
+      }
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        requestSync(document.body.classList.contains('keyboard-open'));
+      });
+
+      window.visualViewport.addEventListener('scroll', () => {
+        requestSync(false);
+      });
+    } else {
+      window.addEventListener('resize', () => requestSync(false));
+    }
+
+    // When typing inputs or textareas are focused
+    document.addEventListener('focusin', (e) => {
+      if (e.target && e.target.matches && e.target.matches('input, textarea')) {
+        const isMsg = e.target.id === 'msg';
+        requestSync(isMsg);
+        setTimeout(() => requestSync(isMsg), 60);
+        setTimeout(() => requestSync(isMsg), 180);
+        setTimeout(() => requestSync(isMsg), 350);
+      }
+    });
+
+    document.addEventListener('focusout', (e) => {
+      if (e.target && e.target.matches && e.target.matches('input, textarea')) {
+        requestSync(false);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          requestSync(false);
+        }, 100);
+      }
+    });
+
+    // Prevent body bounce dragging outside of scrollable elements
+    document.addEventListener(
+      'touchmove',
+      (e) => {
+        if (!e.target.closest('.chat-messages, .chat-sidebar, .emoji-picker')) {
+          if (document.querySelector('.chat-container')) {
+            e.preventDefault();
+          }
+        }
+      },
+      { passive: false }
+    );
+
+    // Initial calculation
+    syncViewport();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMobileViewportFix);
+  } else {
+    setupMobileViewportFix();
+  }
+
   // Expose triggers globally for header buttons
   window.ChatCordPWA = {
     triggerInstall,
-    showPwaToast
+    showPwaToast,
+    setupMobileViewportFix
   };
 })();
+

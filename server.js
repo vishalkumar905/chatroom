@@ -12,6 +12,16 @@ const io = socketio(server);
 
 const PORT = process.env.PORT || 8182;
 
+// Ensure sw.js is never cached by HTTP cache so updates are detected immediately on every launch
+app.use((req, res, next) => {
+  if (req.url === '/sw.js') {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+});
+
 // set static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
