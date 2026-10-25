@@ -2,8 +2,17 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta name="theme-color" content="#667aff" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="ChatCord" />
+		<link rel="manifest" href="manifest.json" />
+		<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png" />
+		<link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
 		<link
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
@@ -74,6 +83,18 @@
 					</div>
 					<button type="submit" class="btn">Join Chat</button>
 				</form>
+				<div id="pwa-install-banner" class="pwa-install-banner hidden">
+					<div class="pwa-install-banner-content">
+						<img src="icons/icon-192x192.png" alt="ChatCord" class="pwa-install-icon" />
+						<div class="pwa-install-text">
+							<h4>Install ChatCord</h4>
+							<p>Fast fullscreen chat on your device</p>
+						</div>
+					</div>
+					<button type="button" class="pwa-install-action-btn pwa-install-btn">
+						<i class="fas fa-download"></i> Install
+					</button>
+				</div>
 			</main>
 		</div>
 
@@ -129,5 +150,6 @@
 				});
 			}
 		</script>
+		<script src="js/pwa.js"></script>
 	</body>
 </html>

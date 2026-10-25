@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#667aff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ChatCord">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <link rel="stylesheet" href="css/style.css">
   <title>ChatCord App</title>
@@ -20,6 +29,9 @@
         </button>
         <button id="invite-btn" class="btn btn-icon" title="Copy Invite Link">
           <i class="fas fa-link"></i>
+        </button>
+        <button id="header-install-btn" class="btn btn-icon btn-install pwa-install-btn hidden" title="Install App to Device">
+          <i class="fas fa-download"></i>
         </button>
         <button id="sound-toggle" class="btn btn-icon" title="Toggle Sound (Enabled)">
           <i class="fas fa-volume-up"></i>
@@ -57,6 +69,9 @@
           </button>
           <button type="button" id="mobile-clear-btn" class="sidebar-action-card" title="Clear chat screen locally">
             <i class="fas fa-trash-alt"></i> <span>Clear Chat Screen</span>
+          </button>
+          <button type="button" id="mobile-install-btn" class="sidebar-action-card pwa-install-btn hidden" title="Install App to Device">
+            <i class="fas fa-download"></i> <span>Install ChatCord App</span>
           </button>
         </div>
         <h3><i class="fas fa-users"></i> Users (<span id="user-count">0</span>)</h3>
@@ -133,6 +148,7 @@
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.4/qs.min.js" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="js/pwa.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

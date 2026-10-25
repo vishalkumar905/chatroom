@@ -1878,3 +1878,184 @@ body.dark-theme .message .text a.chat-link {
 		height: 38px;
 	}
 }
+
+/* =========================================================
+   PWA (Progressive Web App) Mobile & Standalone Styling
+   ========================================================= */
+
+/* Safe area insets for notched phones & fullscreen PWA display */
+@supports (padding-top: env(safe-area-inset-top)) {
+	body {
+		padding-top: env(safe-area-inset-top);
+		padding-bottom: env(safe-area-inset-bottom);
+		padding-left: env(safe-area-inset-left);
+		padding-right: env(safe-area-inset-right);
+	}
+
+	@media (display-mode: standalone) {
+		body {
+			margin: 0 !important;
+			min-height: 100vh;
+			min-height: -webkit-fill-available;
+		}
+
+		.chat-container {
+			height: 100vh;
+			height: -webkit-fill-available;
+			border-radius: 0 !important;
+		}
+
+		.chat-header {
+			padding-top: max(12px, env(safe-area-inset-top));
+		}
+
+		.chat-form-container {
+			padding-bottom: max(12px, env(safe-area-inset-bottom));
+		}
+	}
+}
+
+/* PWA Offline Notification Bar */
+.pwa-offline-banner {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 99999;
+	background: linear-gradient(90deg, #d9534f, #c9302c);
+	color: #ffffff;
+	padding: 8px 16px;
+	font-size: 13px;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+	text-align: center;
+	animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+	from { transform: translateY(-100%); }
+	to { transform: translateY(0); }
+}
+
+/* PWA Install Banner Card on Join Screen */
+.pwa-install-banner {
+	margin-top: 16px;
+	padding: 12px 16px;
+	background: rgba(102, 122, 255, 0.12);
+	border: 1px solid rgba(102, 122, 255, 0.3);
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	animation: fadeIn 0.4s ease-out;
+}
+
+.pwa-install-banner-content {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	text-align: left;
+}
+
+.pwa-install-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 8px;
+	object-fit: cover;
+	flex-shrink: 0;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.pwa-install-text h4 {
+	font-size: 14px;
+	margin: 0;
+	color: var(--dark-color-a);
+	font-weight: 600;
+}
+
+.pwa-install-text p {
+	font-size: 11px;
+	margin: 2px 0 0;
+	color: #666;
+}
+
+.pwa-install-action-btn {
+	background: var(--dark-color-a);
+	color: #ffffff;
+	border: 0;
+	border-radius: 6px;
+	padding: 6px 12px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.pwa-install-action-btn:hover {
+	background: var(--dark-color-b);
+	transform: translateY(-1px);
+}
+
+/* Floating PWA Toast notification */
+.pwa-toast {
+	position: fixed;
+	bottom: 24px;
+	left: 50%;
+	transform: translateX(-50%) translateY(50px);
+	background: rgba(20, 24, 40, 0.95);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	color: #ffffff;
+	padding: 10px 20px;
+	border-radius: 30px;
+	font-size: 13px;
+	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	z-index: 99998;
+	pointer-events: none;
+	opacity: 0;
+	transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;
+	max-width: 90vw;
+	text-align: center;
+}
+
+.pwa-toast.show {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translateX(-50%) translateY(0);
+}
+
+/* Header Install Button */
+.btn-install {
+	background: rgba(102, 122, 255, 0.25) !important;
+	color: #ffffff !important;
+	border: 1px solid rgba(255, 255, 255, 0.3) !important;
+	border-radius: 6px;
+}
+
+.btn-install:hover {
+	background: rgba(102, 122, 255, 0.45) !important;
+}
+
+/* Dark mode overrides for PWA cards */
+body.dark-mode .pwa-install-banner {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .pwa-install-text h4 {
+	color: #9cb1ff;
+}
+
+body.dark-mode .pwa-install-text p {
+	color: #aab;
+}

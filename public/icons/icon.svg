@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f63ff"/>
+      <stop offset="50%" stop-color="#667aff"/>
+      <stop offset="100%" stop-color="#8494ff"/>
+    </linearGradient>
+    <linearGradient id="bubbleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0f3ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#1b2468" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  
+  <!-- App Background with sleek squircle -->
+  <rect width="512" height="512" rx="120" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle top glow highlight -->
+  <rect x="16" y="16" width="480" height="240" rx="104" fill="#ffffff" opacity="0.08"/>
+
+  <!-- Chat Bubble with shadow -->
+  <g filter="url(#shadow)">
+    <!-- Main speech bubble body & tail -->
+    <path d="M120 136 C120 105, 145 80, 176 80 L336 80 C367 80, 392 105, 392 136 L392 272 C392 303, 367 328, 336 328 L232 328 L160 388 C150 396, 136 389, 136 376 L136 328 L176 328 C145 328, 120 303, 120 272 Z"
+          fill="url(#bubbleGrad)"/>
+    
+    <!-- Friendly ChatCord Smile Icon Inside Bubble -->
+    <!-- Eyes -->
+    <ellipse cx="208" cy="188" rx="16" ry="20" fill="#4f63ff"/>
+    <ellipse cx="304" cy="188" rx="16" ry="20" fill="#4f63ff"/>
+    <circle cx="212" cy="182" r="5" fill="#ffffff"/>
+    <circle cx="308" cy="182" r="5" fill="#ffffff"/>
+    
+    <!-- Cheerful Smile Arc -->
+    <path d="M 204 236 C 220 270, 292 270, 308 236" 
+          stroke="#4f63ff" 
+          stroke-width="15" 
+          stroke-linecap="round" 
+          fill="none"/>
+  </g>
+  
+  <!-- Subtle secondary mini bubble -->
+  <circle cx="396" cy="356" r="36" fill="#ffffff" opacity="0.95" filter="url(#shadow)"/>
+  <circle cx="384" cy="356" r="6" fill="#4f63ff"/>
+  <circle cx="396" cy="356" r="6" fill="#4f63ff"/>
+  <circle cx="408" cy="356" r="6" fill="#4f63ff"/>
+</svg>
